@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دکان اسٹاک اور کھاتہ جات نظام | Shop Management System</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+    <!-- Top Header -->
+    <header class="app-header">
+        <div class="header-container">
+            <div class="header-title-area">
+                <h1 data-i18n="app_title">دکان اسٹاک اور کھاتہ جات نظام</h1>
+                <p data-i18n="app_subtitle">ہوم اپلائنسز (فریج، کولر، اے سی، واشنگ مشین) کا آسان حساب کتاب</p>
+            </div>
+            <div class="header-actions">
+                <button id="langToggleBtn" class="btn-lang-toggle" onclick="toggleLanguage()">
+                    English
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation Tabs Bar -->
+    <nav class="nav-bar-container">
+        <div class="nav-tabs">
+            <button class="nav-tab active" data-tab="dashboard" onclick="switchTab('dashboard')">
+                <span data-i18n="nav_dashboard">ڈیش بورڈ</span>
+            </button>
+            <button class="nav-tab" data-tab="stock" onclick="switchTab('stock')">
+                <span data-i18n="nav_stock">موجودہ اسٹاک</span>
+            </button>
+            <button class="nav-tab" data-tab="purchases" onclick="switchTab('purchases')">
+                <span data-i18n="nav_purchases">نیا مال آیا</span>
+            </button>
+            <button class="nav-tab" data-tab="sales" onclick="switchTab('sales')">
+                <span data-i18n="nav_sales">مال فروخت ہوا</span>
+            </button>
+            <button class="nav-tab" data-tab="expenses" onclick="switchTab('expenses')">
+                <span data-i18n="nav_expenses">دکان کے اخراجات</span>
+            </button>
+            <button class="nav-tab" data-tab="history" onclick="switchTab('history')">
+                <span data-i18n="nav_history">تاریخ وار ریکارڈ</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Workspace Area -->
+    <main class="main-content">
+
+        <!-- ============================================== -->
+        <!-- VIEW: DASHBOARD                                -->
+        <!-- ============================================== -->
+        <section id="view-dashboard" class="view-section active">
+            
+            <!-- 8 Summary Cards Grid -->
+            <div class="cards-grid">
+                <div class="summary-card">
+                    <div class="card-label" data-i18n="card_total_stock">موجودہ کل اسٹاک</div>
+                    <div class="card-value text-primary" id="dashTotalStock">0 یونٹ</div>
+                </div>
+                <div class="summary-card card-success">
+                    <div class="card-label" data-i18n="card_rec_today">آج نیا مال آیا</div>
+                    <div class="card-value text-success" id="dashRecToday">0 یونٹ</div>
+                </div>
+                <div class="summary-card card-warning">
+                    <div class="card-label" data-i18n="card_sold_today">آج مال فروخت ہوا</div>
+                    <div class="card-value text-warning" id="dashSoldToday">0 یونٹ</div>
+                </div>
+                <div class="summary-card card-success">
+                    <div class="card-label" data-i18n="card_sales_today">آج کی فروخت کی رقم</div>
+                    <div class="card-value text-success" id="dashSalesToday">Rs. 0</div>
+                </div>
+                <div class="summary-card">
+                    <div class="card-label" data-i18n="card_purchases_today">آج کی خریداری لاگت</div>
+                    <div class="card-value text-primary" id="dashPurchasesToday">Rs. 0</div>
+                </div>
+                <div class="summary-card">
+                    <div class="card-label" data-i18n="card_stock_value">باقی اسٹاک کی کل مالیت</div>
+                    <div class="card-value text-primary" id="dashStockValue">Rs. 0</div>
+                </div>
+                <div class="summary-card card-danger">
+                    <div class="card-label" data-i18n="card_exp_today">آج کے اخراجات</div>
+                    <div class="card-value text-danger" id="dashExpToday">Rs. 0</div>
+                </div>
+                <div class="summary-card card-danger">
+                    <div class="card-label" data-i18n="card_exp_month">اس ماہ کے اخراجات</div>
+                    <div class="card-value text-danger" id="dashExpMonth">Rs. 0</div>
+                </div>
+            </div>
+
+            <!-- Profit & Loss Summary Banner -->
+            <div class="profit-banner">
+                <h3 class="section-title" data-i18n="profit_summary_title">منافع اور اخراجات کا خلاصہ</h3>
+                <div class="profit-grid">
+                    <div class="profit-item">
+                        <span class="p-label" data-i18n="gross_profit_label">مجموعی منافع (Gross Profit)</span>
+                        <span class="p-val text-success" id="dashGrossProfit">Rs. 0</span>
+                    </div>
+                    <div class="profit-item">
+                        <span class="p-label" data-i18n="operating_exp_label">دکان کے کل اخراجات</span>
+                        <span class="p-val text-danger" id="dashOperatingExp">Rs. 0</span>
+                    </div>
+                    <div class="profit-item">
+                        <span class="p-label" data-i18n="net_profit_label">خالص منافع (Net Profit)</span>
+                        <span class="p-val font-bold" id="dashNetProfit">Rs. 0</span>
+                    </div>
+                </div>
+                <div class="profit-note" data-i18n="cogs_formula_info">
+                    نوٹ: خالص منافع = فروخت شدہ مال کا منافع منفی دکان کے اخراجات (کرایہ، تنخواہ، بجلی، وغیرہ)۔ بغیر بکے ہوئے مال کی قیمت منافع سے نہیں کاٹی جاتی بلکہ وہ آپ کا اسٹاک اثاثہ ہے۔
+                </div>
+            </div>
+
+            <!-- 4 Appliances Daily Breakdown -->
+            <div class="section-header">
+                <h3 data-i18n="appliances_breakdown_title">تمام چار اشیاء کا روزمرہ خلاصہ</h3>
+            </div>
+            <div class="appliances-grid" id="appliancesBreakdown">
+                <!-- Dynamically populated -->
+            </div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- VIEW: 1. CURRENT STOCK (موجودہ اسٹاک)           -->
+        <!-- ============================================== -->
+        <section id="view-stock" class="view-section">
+            <div class="section-header">
+                <h2 data-i18n="nav_stock">موجودہ اسٹاک</h2>
+                <p>چاروں مصنوعات کا خریدا گیا، فروخت شدہ اور باقی دستیاب اسٹاک بمع مالیت و منافع</p>
+            </div>
+            
+            <div class="table-responsive">
+                <table class="custom-table">
+                    <thead>
+                        <tr>
+                            <th data-i18n="th_product">پروڈکٹ کا نام</th>
+                            <th class="text-center" data-i18n="th_purchased">کل خریدا گیا</th>
+                            <th class="text-center" data-i18n="th_sold">کل فروخت ہوا</th>
+                            <th class="text-center" data-i18n="th_remaining">باقی اسٹاک</th>
+                            <th class="text-end" data-i18n="th_unit_cost">فی یونٹ خرید لاگت</th>
+                            <th class="text-end" data-i18n="th_stock_value">باقی اسٹاک کی مالیت</th>
+                            <th class="text-end" data-i18n="th_sale_price">فی یونٹ فروخت قیمت</th>
+                            <th class="text-end" data-i18n="th_unit_profit">تخمینی منافع فی یونٹ</th>
+                            <th class="text-center" data-i18n="th_status">اسٹاک کی حالت</th>
+                        </tr>
+                    </thead>
+                    <tbody id="stockTableBody">
+                        <!-- Populated dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- VIEW: 2. STOCK RECEIVED (نیا مال آیا)          -->
+        <!-- ============================================== -->
+        <section id="view-purchases" class="view-section">
+            <div class="section-header">
+                <h2 data-i18n="form_rec_title">نئے مال کی آمد کا اندراج</h2>
+                <p data-i18n="form_rec_subtitle">جب بھی فیکٹری یا ہول سیلر سے نیا مال آئے، یہاں تفصیل درج کریں</p>
+            </div>
+
+            <div class="form-layout-grid">
+                <!-- Form Panel -->
+                <div class="panel-card">
+                    <form id="formPurchase">
+                        <div class="form-group">
+                            <label data-i18n="lbl_select_product">پروڈکٹ منتخب کریں:</label>
+                            <select id="purchaseProductSelect" class="form-control" required>
+                                <option value="">-- پروڈکٹ منتخب کریں --</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label data-i18n="lbl_arrival_date">مال پہنچنے کی تاریخ:</label>
+                            <input type="date" id="purchaseDate" class="form-control" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label data-i18n="lbl_quantity_rec">آمدہ تعداد (کتنے یونٹ آئے):</label>
+                            <input type="number" id="purchaseQty" class="form-control" min="1" placeholder="مثلاً: 3" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label data-i18n="lbl_purchase_price">فی یونٹ خرید قیمت (روپے):</label>
+                            <input type="number" id="purchasePrice" class="form-control" min="0" step="0.01" placeholder="مثلاً: 50000" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label data-i18n="lbl_transport_cost">کرایہ یا ٹرانسپورٹ کا خرچ (روپے):</label>
+                            <input type="number" id="purchaseTransport" class="form-control" min="0" step="0.01" value="0" placeholder="مثلاً: 3000">
+                        </div>
+
+                        <div class="form-group">
+                            <label data-i18n="lbl_notes">اضافی نوٹ یا بل نمبر (اختیاری):</label>
+                            <textarea id="purchaseNotes" class="form-control" placeholder="بل نمبر، سپلائر کا نام یا دیگر تفصیل..."></textarea>
+                        </div>
+
+                        <button type="submit" id="btnSubmitPurchase" class="btn-primary-large">
+                            <span data-i18n="btn_save_purchase">نیا مال محفوظ کریں</span>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Live Auto-Calculation Box -->
+                <div class="panel-card live-calc-box">
+                    <h3 data-i18n="live_calc_title">خودکار حساب کتاب (خریداری)</h3>
+                    <div class="calc-row">
+                        <span data-i18n="calc_total_qty">کل آمدہ تعداد:</span>
+                        <strong id="calcRecQty">0 یونٹ</strong>
+                    </div>
+                    <div class="calc-row">
+                        <span data-i18n="calc_base_cost">مال کی اصل قیمت:</span>
+                        <span id="calcRecBase">Rs. 0</span>
+                    </div>
+                    <div class="calc-row">
+                        <span data-i18n="calc_transport_cost">کرایہ کی رقم:</span>
+                        <span id="calcRecTransport">Rs. 0</span>
+                    </div>
+                    <div class="calc-row total-row">
+                        <span data-i18n="calc_grand_total">کل لاگت (خرید + کرایہ):</span>
+                        <strong id="calcRecTotal">Rs. 0</strong>
+                    </div>
+                    <div class="calc-row">
+                        <span data-i18n="calc_effective_unit">حتمی لاگت فی یونٹ:</span>
+                        <strong id="calcRecEffectiveUnit" class="text-primary">Rs. 0</strong>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- VIEW: 3. STOCK SOLD (مال فروخت ہوا)            -->
+        <!-- ============================================== -->
+        <section id="view-sales" class="view-section">
+            <div class="section-header">
+                <h2 data-i18n="form_sale_title">مال فروخت کرنے کا اندراج</h2>
+                <p data-i18n="form_sale_subtitle">ہر فروخت کے بعد کسٹمر کو دی گئی تعداد اور قیمت یہاں درج کریں</p>
+            </div>
+
+            <div class="form-layout-grid">
+                <!-- Sale Form Panel -->
+                <div class="panel-card">
+                    <form id="formSale">
+                        <div class="form-group">
+                            <label data-i18n="lbl_select_product">پروڈکٹ منتخب کریں:</label>
+                            <select id="saleProductSelect" class="form-control" required>
+                                <option value="">-- پروڈکٹ منتخب کریں --</option>
+                            </select>
+                            <div style="margin-top: 0.5rem;">
+                                <span data-i18n="lbl_available_stock">اس پروڈکٹ کا باقی اسٹاک:</span>
+                                <span id="saleAvailableStockBadge" class="badge badge-neutral">0 یونٹ</span>
+                            </div>
+                        </div>
+
+                        <div id="saleStockWarning" class="alert-box alert-danger hidden" data-i18n="err_out_of_stock">
+                            اسٹاک میں اتنے یونٹس دستیاب نہیں ہیں! برائے مہربانی دستیاب اسٹاک چیک کریں۔
+                        </div>
+
+                        <div class="form-group">
+                            <label data-i18n="lbl_sale_date">فروخت کی تاریخ:</label>
+                            <input type="date" id="saleDate" class="form-control" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label data-i18n="lbl_quantity_sold">فروخت شدہ تعداد:</label>
+                            <input type="number" id="saleQty" class="form-control" min="1" placeholder="مثلاً: 1" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label data-i18n="lbl_sale_price">فی یونٹ فروخت قیمت (روپے):</label>
+                            <input type="number" id="salePrice" class="form-control" min="0" step="0.01" placeholder="مثلاً: 65000" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label data-i18n="lbl_notes">اضافی نوٹ یا کسٹمر تفصیل (اختیاری):</label>
+                            <textarea id="saleNotes" class="form-control" placeholder="کسٹمر کا نام، رابطہ یا دیگر تفصیل..."></textarea>
+                        </div>
+
+                        <button type="submit" id="btnSubmitSale" class="btn-primary-large">
+                            <span data-i18n="btn_save_sale">فروخت محفوظ کریں</span>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Live Auto-Calculation Box -->
+                <div class="panel-card live-calc-box">
+                    <h3 data-i18n="live_calc_sale_title">خودکار حساب کتاب (فروخت)</h3>
+                    <div class="calc-row total-row">
+                        <span data-i18n="calc_total_sale">کل فروخت کی رقم:</span>
+                        <strong id="calcSaleTotal">Rs. 0</strong>
+                    </div>
+                    <div class="calc-row">
+                        <span data-i18n="calc_sale_profit">اس فروخت پر تخمینی منافع:</span>
+                        <strong id="calcSaleProfit" class="text-success">Rs. 0</strong>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- VIEW: 4. SHOP EXPENSES (دکان کے اخراجات)        -->
+        <!-- ============================================== -->
+        <section id="view-expenses" class="view-section">
+            <div class="section-header">
+                <h2 data-i18n="form_exp_title">دکان کا نیا خرچہ درج کریں</h2>
+                <p data-i18n="form_exp_subtitle">کرایہ، ملازمین کی تنخواہ، بجلی کا بل یا متفرق اخراجات درج کریں</p>
+            </div>
+
+            <!-- Expense Summary Cards -->
+            <div class="cards-grid" style="margin-bottom: 1.5rem;">
+                <div class="summary-card card-danger">
+                    <div class="card-label" data-i18n="card_exp_today">آج کے اخراجات</div>
+                    <div class="card-value text-danger" id="expSummaryToday">Rs. 0</div>
+                </div>
+                <div class="summary-card card-danger">
+                    <div class="card-label" data-i18n="card_exp_month">اس ماہ کے اخراجات</div>
+                    <div class="card-value text-danger" id="expSummaryMonth">Rs. 0</div>
+                </div>
+                <div class="summary-card">
+                    <div class="card-label">کل اخراجات (اب تک)</div>
+                    <div class="card-value text-primary" id="expSummaryAll">Rs. 0</div>
+                </div>
+            </div>
+
+            <div class="form-layout-grid">
+                <!-- Form Panel -->
+                <div class="panel-card">
+                    <form id="formExpense">
+                        <div class="form-group">
+                            <label data-i18n="lbl_exp_category">خرچے کی قسم:</label>
+                            <select id="expCategory" class="form-control" required>
+                                <option value="rent" data-i18n="opt_rent">دکان کا ماہانہ کرایہ</option>
+                                <option value="salary" data-i18n="opt_salary">ملازمین کی تنخواہ</option>
+                                <option value="electricity" data-i18n="opt_electricity">بجلی کا بل</option>
+                                <option value="other" data-i18n="opt_other">دیگر متفرق اخراجات</option>
+                            </select>
+                        </div>
+
+                        <!-- Target Month for Rent / Salary to avoid duplicates -->
+                        <div class="form-group" id="expMonthGroup">
+                            <label data-i18n="lbl_exp_month">کس مہینے کا ہے (کرایہ/تنخواہ کے لیے):</label>
+                            <input type="month" id="expMonth" class="form-control">
+                        </div>
+
+                        <!-- Duplicate Warning Box -->
+                        <div id="expDuplicateWarning" class="alert-box alert-warning hidden">
+                            <!-- Populated on conflict -->
+                        </div>
+
+                        <div id="expForceDuplicateContainer" class="form-group hidden">
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; color: #92400e;">
+                                <input type="checkbox" id="expForceDuplicate">
+                                <span data-i18n="chk_force_duplicate">جی ہاں، مجھے معلوم ہے اس مہینے کا ریکارڈ پہلے سے موجود ہے، پھر بھی محفوظ کریں۔</span>
+                            </label>
+                        </div>
+
+                        <div class="form-group">
+                            <label data-i18n="lbl_exp_amount">خرچے کی رقم (روپے):</label>
+                            <input type="number" id="expAmount" class="form-control" min="1" step="0.01" placeholder="مثلاً: 25000" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label data-i18n="lbl_exp_date">خرچے کی تاریخ:</label>
+                            <input type="date" id="expDate" class="form-control" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label data-i18n="lbl_exp_desc">تفصیل (مثلاً: ملازم کا نام یا میٹر ریڈنگ):</label>
+                            <textarea id="expDesc" class="form-control" placeholder="تفصیل لکھیں..."></textarea>
+                        </div>
+
+                        <button type="submit" id="btnSubmitExpense" class="btn-primary-large">
+                            <span data-i18n="btn_save_expense">خرچہ محفوظ کریں</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- VIEW: 5. HISTORY & AUDIT LOG                   -->
+        <!-- ============================================== -->
+        <section id="view-history" class="view-section">
+            <div class="section-header">
+                <h2 data-i18n="history_title">تاریخ وار ریکارڈ اور تفصیلات</h2>
+                <p>ہر خریداری، فروخت اور اخراجات کا مکمل تاریخی ریکارڈ جس میں کبھی کوئی پرانا ریکارڈ ضائع نہیں ہوتا</p>
+            </div>
+
+            <!-- History Subtabs -->
+            <div class="history-subtabs">
+                <button class="history-tab-btn active" data-sec="purchases" onclick="switchHistorySection('purchases')">
+                    <span data-i18n="btn_tab_purchases">مال آمد کا ریکارڈ</span>
+                </button>
+                <button class="history-tab-btn" data-sec="sales" onclick="switchHistorySection('sales')">
+                    <span data-i18n="btn_tab_sales">فروخت کا ریکارڈ</span>
+                </button>
+                <button class="history-tab-btn" data-sec="expenses" onclick="switchHistorySection('expenses')">
+                    <span data-i18n="btn_tab_expenses">اخراجات کا ریکارڈ</span>
+                </button>
+            </div>
+
+            <!-- Filter Bar -->
+            <div class="filter-bar">
+                <div class="filter-pills">
+                    <button class="filter-btn active" onclick="setHistoryFilter('all')" data-i18n="filter_all">تمام ریکارڈ</button>
+                    <button class="filter-btn" onclick="setHistoryFilter('today')" data-i18n="filter_today">صرف آج کا</button>
+                    <button class="filter-btn" onclick="setHistoryFilter('month')" data-i18n="filter_month">اس مہینے کا</button>
+                </div>
+                <div class="date-range-box">
+                    <label data-i18n="lbl_from_date">شروع تاریخ:</label>
+                    <input type="date" id="historyFromDate" class="date-input">
+                    <label data-i18n="lbl_to_date">آخری تاریخ:</label>
+                    <input type="date" id="historyToDate" class="date-input">
+                    <button class="filter-btn active" onclick="loadHistory()" data-i18n="btn_filter">تلاش کریں</button>
+                </div>
+            </div>
+
+            <!-- History Data Table -->
+            <div class="table-responsive">
+                <table class="custom-table">
+                    <thead id="historyTableHead">
+                        <!-- Populated dynamically based on section -->
+                    </thead>
+                    <tbody id="historyTableBody">
+                        <!-- Populated dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Floating Toast Notifications -->
+    <div id="toastContainer"></div>
+
+    <!-- Scripts -->
+    <script src="/static/js/translations.js"></script>
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
